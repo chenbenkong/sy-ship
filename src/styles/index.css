@@ -1,0 +1,1086 @@
+:root {
+  --bg: #04060f;
+  --glass: rgba(16, 20, 42, 0.55);
+  --glass-strong: rgba(16, 20, 42, 0.78);
+  --border: rgba(255, 255, 255, 0.14);
+  --text: #eaf0ff;
+  --text-dim: rgba(234, 240, 255, 0.62);
+  --accent: #6ea8ff;
+  --accent-2: #b07cff;
+  --gold: #ffc46b;
+  --grad: linear-gradient(135deg, #6ea8ff 0%, #b07cff 100%);
+  --shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
+  font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  width: 100%;
+  height: 100%;
+}
+
+.app {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+  overflow: hidden;
+}
+
+.canvas-container {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+/* ============ 顶部标题栏 ============ */
+.app-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.1rem 1.6rem;
+  pointer-events: none;
+}
+
+.app-title {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.05;
+}
+
+.app-title-main {
+  font-size: 1.9rem;
+  font-weight: 800;
+  letter-spacing: 0.35rem;
+  background: var(--grad);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 0 28px rgba(110, 168, 255, 0.35);
+}
+
+.app-title-sub {
+  font-size: 0.7rem;
+  letter-spacing: 0.42rem;
+  color: var(--text-dim);
+  margin-top: 0.25rem;
+  font-weight: 600;
+}
+
+.app-stats {
+  display: flex;
+  gap: 0.6rem;
+}
+
+.stat-chip {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.85rem;
+  font-size: 0.8rem;
+  border-radius: 999px;
+  background: var(--glass);
+  border: 1px solid var(--border);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  color: var(--text);
+}
+
+.stat-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #43e08a;
+  box-shadow: 0 0 10px #43e08a;
+}
+
+/* ============ 加载页 ============ */
+.loading-screen {
+  position: absolute;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.1rem;
+  background: radial-gradient(ellipse at center, #0a0d1f 0%, #04060f 100%);
+  transition: opacity 0.6s ease;
+}
+
+.loading-orbit {
+  width: 90px;
+  height: 90px;
+  border: 2px solid rgba(110, 168, 255, 0.18);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  position: relative;
+  animation: spin 1.4s linear infinite;
+  box-shadow: 0 0 30px rgba(110, 168, 255, 0.25);
+}
+
+.loading-planet {
+  position: absolute;
+  top: -7px;
+  left: 50%;
+  width: 14px;
+  height: 14px;
+  margin-left: -7px;
+  border-radius: 50%;
+  background: var(--gold);
+  box-shadow: 0 0 16px var(--gold);
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.loading-title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: 0.3rem;
+  background: var(--grad);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.loading-sub {
+  color: var(--text-dim);
+  font-size: 0.85rem;
+  letter-spacing: 0.2rem;
+}
+
+.loading-bar {
+  width: 220px;
+  height: 4px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.12);
+  overflow: hidden;
+}
+
+.loading-bar-fill {
+  height: 100%;
+  background: var(--grad);
+  border-radius: 4px;
+  transition: width 0.4s ease;
+  box-shadow: 0 0 12px rgba(110, 168, 255, 0.6);
+}
+
+/* ============ 底部控制面板 ============ */
+.controls {
+  position: absolute;
+  bottom: 1.4rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 20;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 0.8rem 1.2rem;
+  border-radius: 18px;
+  background: var(--glass);
+  border: 1px solid var(--border);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  box-shadow: var(--shadow);
+  max-width: calc(100vw - 2rem);
+}
+
+.control-group {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.control-buttons,
+.control-toggles {
+  gap: 0.5rem;
+}
+
+.slider-row {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.slider-row label {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+
+.slider-value {
+  font-size: 0.8rem;
+  color: var(--accent);
+  min-width: 2.6rem;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 7rem;
+  height: 4px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.18);
+  outline: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: #fff;
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(110, 168, 255, 0.8);
+  transition: transform 0.15s ease;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+}
+
+.ctrl-btn,
+.toggle-btn {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text);
+  border: 1px solid var(--border);
+  padding: 0.5rem 0.95rem;
+  font-size: 0.85rem;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  white-space: nowrap;
+}
+
+.ctrl-btn:hover,
+.toggle-btn:hover {
+  background: rgba(255, 255, 255, 0.14);
+  box-shadow: 0 0 14px rgba(110, 168, 255, 0.3);
+}
+
+.toggle-btn.active,
+.ctrl-btn.active {
+  background: var(--grad);
+  border-color: transparent;
+  color: #fff;
+  box-shadow: 0 0 16px rgba(110, 168, 255, 0.45);
+}
+
+/* ============ 行星信息卡 ============ */
+.planet-info {
+  position: absolute;
+  top: 5.2rem;
+  left: 1.6rem;
+  z-index: 40;
+  width: 22rem;
+  max-width: calc(100vw - 3.2rem);
+  border-radius: 18px;
+  background: var(--glass-strong);
+  border: 1px solid var(--border);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  display: none;
+}
+
+.planet-info.visible {
+  display: block;
+  animation: fadeUp 0.35s ease;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.planet-info-header {
+  padding: 0.7rem 1.3rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.planet-info-title {
+  display: flex;
+  align-items: baseline;
+  gap: 0.7rem;
+}
+
+.planet-info-name {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #fff;
+  text-shadow: 0 0 16px rgba(255, 255, 255, 0.4);
+}
+
+.planet-info-type {
+  font-size: 0.72rem;
+  padding: 0.18rem 0.55rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #fff;
+  white-space: nowrap;
+}
+
+.planet-info-fact {
+  margin: 0.7rem 1.3rem 0;
+  padding: 0.5rem 0.9rem;
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: var(--text);
+  background: rgba(110, 168, 255, 0.1);
+  border-left: 3px solid var(--accent);
+  border-radius: 8px;
+}
+
+.fact-label {
+  display: inline-block;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.1rem;
+  color: var(--accent);
+  margin-right: 0.4rem;
+}
+
+/* 两列紧凑网格：11 项科研数据一屏内完整呈现 */
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 1.2rem;
+  margin: 0.7rem 1.3rem;
+  padding: 0.55rem 0.75rem;
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+}
+
+.info-row {
+  display: flex;
+  flex-direction: column;
+  padding: 0.32rem 0.4rem;
+  min-width: 0;
+}
+
+.info-label {
+  font-size: 0.62rem;
+  letter-spacing: 0.06rem;
+  color: var(--text-dim);
+  font-weight: 600;
+}
+
+.info-value {
+  font-size: 0.78rem;
+  color: var(--text);
+  line-height: 1.35;
+  word-break: break-all;
+}
+
+.button-container {
+  display: flex;
+  gap: 0.6rem;
+  padding: 0 1.3rem 1rem;
+}
+
+.close-info-btn,
+.cancel-tracking-btn {
+  flex: 1;
+  padding: 0.45rem 1rem;
+  font-size: 0.82rem;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.close-info-btn {
+  background: rgba(255, 196, 107, 0.16);
+  color: var(--gold);
+  border: 1px solid rgba(255, 196, 107, 0.5);
+}
+
+.cancel-tracking-btn {
+  background: rgba(255, 90, 90, 0.14);
+  color: #ff7a7a;
+  border: 1px solid rgba(255, 90, 90, 0.45);
+}
+
+.close-info-btn:hover,
+.cancel-tracking-btn:hover {
+  filter: brightness(1.25);
+}
+
+/* ============ 行星名称标签 ============ */
+.planet-label {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  color: var(--text);
+  font-size: 0.78rem;
+  letter-spacing: 0.08rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  background: rgba(10, 14, 30, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  pointer-events: none;
+  z-index: 15;
+  white-space: nowrap;
+  text-shadow: 0 0 8px rgba(0, 0, 0, 0.8);
+}
+
+/* ============ 旧状态显示（已由标题栏接管，隐藏避免重叠） ============ */
+.zoom-level,
+.speed-level {
+  display: none;
+}
+
+/* ============ 致命错误浮层 ============ */
+.fatal-error {
+  position: absolute;
+  inset: 0;
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 2rem;
+  background: radial-gradient(ellipse at center, #1a0d12 0%, #04060f 100%);
+  color: #ffd9d9;
+  text-align: center;
+}
+
+.fatal-error h2 {
+  font-size: 1.4rem;
+  color: #ff8a8a;
+  letter-spacing: 0.15rem;
+}
+
+.fatal-error pre {
+  max-width: 90vw;
+  max-height: 50vh;
+  overflow: auto;
+  padding: 1rem;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(255, 138, 138, 0.4);
+  font-size: 0.78rem;
+  line-height: 1.5;
+  text-align: left;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.fatal-error p {
+  color: var(--text-dim);
+  font-size: 0.85rem;
+}
+
+/* ============ 响应式 ============ */
+@media (max-width: 768px) {
+  .app-header {
+    padding: 0.8rem 1rem;
+  }
+  .app-title-main {
+    font-size: 1.4rem;
+    letter-spacing: 0.2rem;
+  }
+  .app-title-sub {
+    display: none;
+  }
+  .app-stats {
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+  .stat-chip {
+    font-size: 0.7rem;
+    padding: 0.3rem 0.6rem;
+  }
+  .controls {
+    gap: 0.6rem;
+    padding: 0.7rem 0.9rem;
+    bottom: 0.8rem;
+  }
+  .control-group {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .planet-info {
+    top: auto;
+    bottom: 7rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100vw - 2rem);
+  }
+}
+
+/* ============ UI 容器层（支持 H 键整体隐藏） ============ */
+.ui-layer {
+  transition: opacity 0.5s ease;
+}
+
+.ui-layer.hidden {
+  opacity: 0;
+  pointer-events: none !important;
+}
+
+.ui-layer.hidden * {
+  pointer-events: none !important;
+}
+
+.hide-hint {
+  position: absolute;
+  bottom: 0.4rem;
+  right: 0.9rem;
+  z-index: 5;
+  font-size: 0.65rem;
+  letter-spacing: 0.08rem;
+  color: rgba(234, 240, 255, 0.28);
+  pointer-events: none;
+  user-select: none;
+}
+
+/* ============ 星球速览导航 ============ */
+.planet-nav {
+  position: absolute;
+  top: 50%;
+  right: 1.1rem;
+  transform: translateY(-50%);
+  z-index: 25;
+  display: flex;
+  flex-direction: column;
+  gap: 0.28rem;
+  padding: 0.7rem 0.55rem;
+  border-radius: 16px;
+  background: var(--glass);
+  border: 1px solid var(--border);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: var(--shadow);
+}
+
+.planet-nav {
+  transition: all 0.3s ease;
+}
+
+/* 折叠态：只保留一个小按钮 */
+.planet-nav.collapsed {
+  padding: 0;
+  background: transparent;
+  border: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow: none;
+}
+
+.nav-toggle {
+  display: block;
+  margin: 0 auto 0.4rem;
+  padding: 0.32rem 0.75rem;
+  font-size: 0.68rem;
+  letter-spacing: 0.1rem;
+  color: var(--text-dim);
+  background: var(--glass);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  white-space: nowrap;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+.nav-toggle:hover {
+  color: var(--text);
+  background: rgba(110, 168, 255, 0.18);
+  border-color: rgba(110, 168, 255, 0.5);
+}
+
+.collapsed .nav-toggle {
+  margin-bottom: 0;
+}
+
+.nav-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.28rem;
+  animation: fadeUp 0.25s ease;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.28rem 0.7rem;
+  font-size: 0.78rem;
+  color: var(--text);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.nav-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateX(-2px);
+}
+
+.nav-item.active {
+  background: rgba(110, 168, 255, 0.18);
+  border-color: rgba(110, 168, 255, 0.45);
+}
+
+.nav-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.nav-name {
+  letter-spacing: 0.06rem;
+}
+
+/* ============ 行星标签升级：光点 + 名称 ============ */
+.planet-label {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.18rem 0.55rem;
+}
+
+.planet-label .label-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+  .planet-nav {
+    top: auto;
+    bottom: 6.2rem;
+    right: 0.5rem;
+    transform: none;
+    padding: 0.4rem 0.35rem;
+    gap: 0.15rem;
+    max-height: 42vh;
+    overflow-y: auto;
+  }
+  .nav-item {
+    padding: 0.2rem 0.5rem;
+    font-size: 0.7rem;
+  }
+}
+
+/* ============ 悬停提示 ============ */
+.hover-tip {
+  position: fixed;
+  z-index: 60;
+  padding: 0.25rem 0.6rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.05rem;
+  color: var(--text);
+  background: rgba(10, 14, 30, 0.75);
+  border: 1px solid rgba(110, 168, 255, 0.35);
+  border-radius: 8px;
+  pointer-events: none;
+  white-space: nowrap;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+/* ============ 电影感暗角（不拦截鼠标） ============ */
+.canvas-container::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse at center, transparent 62%, rgba(0, 0, 0, 0.42) 100%);
+}
+
+.canvas-container {
+  position: absolute;
+}
+
+/* 头部模拟时间芯片 */
+.sim-date-chip {
+  color: #9fd0ff !important;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.5px;
+}
+
+/* ============ 加载页：太阳系轨道动画 ============ */
+.loading-solar {
+  position: relative;
+  width: 300px;
+  height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: scale(0.92);
+}
+
+.loading-sun {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 26px;
+  height: 26px;
+  margin: -13px 0 0 -13px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #fff3d6 0%, #ffcf5c 45%, #ff9a2e 100%);
+  box-shadow: 0 0 22px rgba(255, 180, 60, 0.85), 0 0 55px rgba(255, 150, 40, 0.4);
+  animation: loading-sun-pulse 2.4s ease-in-out infinite;
+}
+
+@keyframes loading-sun-pulse {
+  0%, 100% { box-shadow: 0 0 22px rgba(255, 180, 60, 0.85), 0 0 55px rgba(255, 150, 40, 0.4); }
+  50% { box-shadow: 0 0 30px rgba(255, 190, 70, 1), 0 0 75px rgba(255, 160, 50, 0.55); }
+}
+
+.loading-orbit-ring {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  border: 1px solid rgba(140, 180, 255, 0.14);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.loading-orbit-spin {
+  position: absolute;
+  inset: 0;
+  animation: spin linear infinite;
+}
+
+.loading-orbit-spin .loading-planet {
+  position: absolute;
+  top: 50%;
+  margin: 0; /* 覆盖旧单行星规则的 margin-left 偏移 */
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.35);
+}
+
+.loading-orbit-spin .loading-planet.has-ring {
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.35), 0 0 0 3px rgba(232, 201, 105, 0.28);
+}
+
+
+/* ============ 探索模式（企业号）============ */
+.ctrl-btn.explore-active {
+  background: rgba(80, 170, 255, 0.28);
+  color: #9fd4ff;
+  border: 1px solid rgba(110, 190, 255, 0.85);
+  box-shadow: 0 0 14px rgba(80, 170, 255, 0.45);
+}
+
+.explore-hud {
+  position: fixed;
+  top: 4.6rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 45;
+  padding: 0.55rem 1.4rem;
+  border-radius: 14px;
+  background: rgba(10, 18, 34, 0.72);
+  border: 1px solid rgba(110, 190, 255, 0.4);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5), 0 0 18px rgba(80, 160, 255, 0.15) inset;
+  text-align: center;
+  pointer-events: none;
+}
+
+.explore-hud-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.25rem;
+  color: #b8dcff;
+  text-shadow: 0 0 10px rgba(120, 190, 255, 0.7);
+  margin-bottom: 0.3rem;
+}
+
+.explore-hud-keys {
+  display: flex;
+  gap: 0.9rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  font-size: 0.66rem;
+  color: rgba(200, 225, 255, 0.75);
+}
+
+.explore-hud-keys span {
+  padding: 0.1rem 0.45rem;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+
+/* ============ 虚拟摇杆 ============ */
+.joystick-base {
+  position: fixed;
+  bottom: 2.5rem;
+  left: 2rem;
+  z-index: 48;
+  border-radius: 50%;
+  background: rgba(12, 20, 38, 0.55);
+  border: 1px solid rgba(110, 190, 255, 0.3);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: none;
+  cursor: grab;
+  user-select: none;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+.joystick-base:active {
+  cursor: grabbing;
+}
+
+.joystick-ring {
+  position: absolute;
+  inset: 8px;
+  border-radius: 50%;
+  border: 1px dashed rgba(140, 200, 255, 0.25);
+  pointer-events: none;
+}
+
+.joystick-cross-h,
+.joystick-cross-v {
+  position: absolute;
+  background: rgba(140, 200, 255, 0.12);
+  pointer-events: none;
+}
+
+.joystick-cross-h {
+  width: 70%;
+  height: 1px;
+}
+
+.joystick-cross-v {
+  width: 1px;
+  height: 70%;
+}
+
+.joystick-knob {
+  position: absolute;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, rgba(160, 210, 255, 0.9), rgba(60, 120, 220, 0.7));
+  border: 2px solid rgba(180, 220, 255, 0.6);
+  box-shadow: 0 0 12px rgba(100, 180, 255, 0.5);
+  pointer-events: none;
+  transition: transform 0.05s linear;
+}
+
+/* HUD 淡出 */
+.explore-hud {
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.explore-hud.fade {
+  opacity: 0;
+  transform: translateX(-50%) translateY(-10px);
+  pointer-events: none;
+}
+
+
+/* ============ 自动驾驶面板 ============ */
+.autopilot-panel {
+  position: fixed;
+  bottom: 2.5rem;
+  right: 2rem;
+  z-index: 48;
+  padding: 0.7rem 0.9rem;
+  border-radius: 12px;
+  background: rgba(10, 18, 34, 0.72);
+  border: 1px solid rgba(110, 190, 255, 0.35);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.45);
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  min-width: 170px;
+}
+
+.autopilot-title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.18rem;
+  color: #b8dcff;
+}
+
+.autopilot-select {
+  appearance: none;
+  -webkit-appearance: none;
+  background: rgba(20, 32, 56, 0.9);
+  color: #dceeff;
+  border: 1px solid rgba(110, 190, 255, 0.4);
+  border-radius: 8px;
+  padding: 0.4rem 0.6rem;
+  font-size: 0.78rem;
+  cursor: pointer;
+  outline: none;
+}
+
+.autopilot-select:hover {
+  border-color: rgba(140, 210, 255, 0.7);
+}
+
+.autopilot-hint {
+  font-size: 0.64rem;
+  color: rgba(180, 210, 245, 0.65);
+  letter-spacing: 0.04rem;
+}
+
+/* ============ 第一视角：控制面板折叠到左侧竖排 ============ */
+.controls.first-person {
+  bottom: auto;
+  top: 50%;
+  left: 1rem;
+  transform: translateY(-50%);
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.7rem;
+  padding: 0.7rem 0.85rem;
+  width: 12.5rem;
+  max-width: 12.5rem;
+  border-radius: 14px;
+  opacity: 0.92;
+}
+.controls.first-person .control-group {
+  flex-direction: column;
+  align-items: stretch;
+  width: 100%;
+  gap: 0.5rem;
+}
+.controls.first-person .slider-row {
+  width: 100%;
+  justify-content: space-between;
+}
+.controls.first-person .slider-row input[type="range"] {
+  flex: 1;
+}
+.controls.first-person .control-buttons,
+.controls.first-person .control-toggles {
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+/* ============ 第一视角：收起/展开控制台悬浮按钮 ============ */
+.dash-toggle-fab {
+  position: fixed;
+  right: 1.2rem;
+  bottom: 8.6rem;
+  z-index: 40;
+  padding: 0.55rem 1rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  color: #dff2ff;
+  background: rgba(13, 30, 48, 0.72);
+  border: 1px solid rgba(90, 180, 255, 0.55);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 4px 18px rgba(0, 20, 50, 0.45);
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+.dash-toggle-fab:hover {
+  background: rgba(25, 55, 90, 0.85);
+  border-color: rgba(140, 210, 255, 0.9);
+}
+.dash-toggle-fab.off {
+  color: #9fc6e8;
+  background: rgba(10, 22, 38, 0.6);
+  border-color: rgba(120, 170, 220, 0.35);
+}
+
+.obs-btn:hover {
+  background: rgba(16, 40, 60, 0.8);
+  border-color: rgba(90, 220, 255, 0.85);
+  box-shadow: 0 0 12px rgba(90, 220, 255, 0.25);
+  transform: translateY(-1px);
+}
+
+/* 观赏模式环形开关：类似太阳系轨道的多重环图标，右下角固定，隐藏设置后变淡 */
+.obs-btn {
+  position: fixed;
+  right: 1.2rem;
+  bottom: 5.2rem;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  background: rgba(10, 26, 44, 0.68);
+  border: 1px solid rgba(120, 210, 255, 0.55);
+  color: #bfe8ff;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 4px 16px rgba(0, 20, 50, 0.45);
+  transition: all 0.25s ease;
+  z-index: 45;
+}
+.obs-btn:hover {
+  background: rgba(24, 55, 90, 0.85);
+  border-color: rgba(160, 225, 255, 0.95);
+  color: #e4f6ff;
+  box-shadow: 0 0 14px rgba(120, 210, 255, 0.35);
+  transform: scale(1.06);
+}
+.obs-btn .obs-icon {
+  display: block;
+}
+/* 观赏模式激活：整体变淡但保留在右下角 */
+.obs-btn.dim {
+  color: rgba(150, 200, 235, 0.32);
+  border-color: rgba(120, 170, 220, 0.18);
+  background: rgba(8, 18, 30, 0.32);
+  box-shadow: none;
+  transform: scale(0.9);
+}
+.obs-btn.dim:hover {
+  background: rgba(20, 42, 70, 0.7);
+  border-color: rgba(150, 205, 245, 0.65);
+  color: rgba(200, 235, 255, 0.8);
+  transform: scale(0.95);
+}
